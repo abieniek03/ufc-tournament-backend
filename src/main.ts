@@ -8,6 +8,7 @@ async function bootstrap() {
   app.enableCors();
 
   app.useGlobalInterceptors(new TransformResponseInterceptor());
+
   const config = new DocumentBuilder()
     .setTitle('UFC Game Tournament API')
     .setDescription('REST API for UFC Game Tournament application.')

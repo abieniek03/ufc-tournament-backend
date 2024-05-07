@@ -12,3 +12,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+model Weightclass {
+  id        String   @unique
+  name      String
+  sex       Sex
+  limit     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("weightclasses")
+}
