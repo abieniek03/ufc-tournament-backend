@@ -1,11 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export type Sex = 'MALE' | 'FEMALE';
 
-export class WeightclassDto {
-  @ApiProperty()
-  id: string;
-
+class WeightclassDto {
   @ApiProperty()
   name: string;
 
@@ -15,3 +12,10 @@ export class WeightclassDto {
   @ApiProperty()
   limit: number;
 }
+
+export class CreateWeightclassDto extends WeightclassDto {
+  @ApiProperty()
+  id: string;
+}
+
+export class UpdateWeichtclassDto extends PartialType(CreateWeightclassDto) {}
