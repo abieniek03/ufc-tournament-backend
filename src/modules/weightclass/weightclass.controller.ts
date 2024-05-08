@@ -16,7 +16,7 @@ import {
   CreateWeightclassDto,
   UpdateWeichtclassDto,
 } from './dto/weightclass.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from 'src/ guards/admin-auth.guard';
 
 @ApiTags('Weightclass')
@@ -26,6 +26,26 @@ export class WeightclassController {
 
   @UseGuards(new AdminAuthGuard())
   @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async createWeightclass(
     @Body() data: CreateWeightclassDto,
   ): Promise<WeightclassModel> {
@@ -33,6 +53,14 @@ export class WeightclassController {
   }
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async getAllWeightclass(
     @Query('sex') sex?: Sex,
   ): Promise<WeightclassModel[]> {
@@ -40,6 +68,14 @@ export class WeightclassController {
   }
 
   @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async getWeightclassByName(
     @Param('id') id: string,
   ): Promise<WeightclassModel> {
@@ -48,6 +84,26 @@ export class WeightclassController {
 
   @UseGuards(new AdminAuthGuard())
   @Patch(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async editWeightclass(
     @Param('id') id: string,
     @Body() data: UpdateWeichtclassDto,
@@ -61,6 +117,14 @@ export class WeightclassController {
   @UseGuards(new AdminAuthGuard())
   @Delete(':id')
   @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async deleteWeightclass(@Param('id') id: string): Promise<void> {
     await this.weightclassService.deleteWeightclass(id);
   }

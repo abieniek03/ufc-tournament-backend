@@ -18,4 +18,4 @@ export class CreateWeightclassDto extends WeightclassDto {
   id: string;
 }
 
-export class UpdateWeichtclassDto extends PartialType(CreateWeightclassDto) {}
+export class UpdateWeichtclassDto extends PartialType(WeightclassDto) {}
