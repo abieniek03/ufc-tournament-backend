@@ -48,6 +48,19 @@ model Fighter {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   Weightclass   Weightclass? @relation(fields: [weightclassId], references: [id])
+  Ranking       Ranking[]
 
   @@map("fighters")
+}
+
+model Ranking {
+  fighterId        String   @id @unique
+  weightclassId    String
+  position         Int
+  positionPrevious Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  Fighter          Fighter? @relation(fields: [fighterId], references: [id])
+
+  @@map("rankings")
 }
