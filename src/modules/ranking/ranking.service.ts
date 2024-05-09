@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -14,17 +15,14 @@ export class RankingService {
 
   public async addRanking(data: CreateRankingDto): Promise<Ranking> {
     try {
-      const isExist = await this.prisma.ranking.findFirst({
-        where: { fighterId: data.fighterId },
-      });
-
-      if (isExist)
-        throw new ConflictException('Fighter already exist in this ranking.');
-
       return await this.prisma.ranking.create({ data });
     } catch (error: any) {
       if (error.code === 'P2003') {
-        throw new ConflictException(error);
+        throw new BadRequestException('Fighter not exist in roaster.');
+      }
+
+      if (error.code === 'P2002') {
+        throw new ConflictException('Fighter already exist in this ranking.');
       }
 
       throw error;
@@ -79,13 +77,13 @@ export class RankingService {
   public async editRanking(
     fighterId: string,
     data: UpdateRankingDto,
-  ): Promise<any> {
+  ): Promise<Ranking> {
     try {
       const fighter = await this.prisma.ranking.findUnique({
-        where: { fighterId: 'mateusz-gamrot' },
+        where: { fighterId },
       });
 
-      console.log('data: ', data);
+      if (!fighter) throw new NotFoundException('Fighter not found.');
 
       return await this.prisma.ranking.update({
         where: { fighterId },
@@ -95,21 +93,19 @@ export class RankingService {
         },
       });
     } catch (error: any) {
-      console.log(error);
-
       throw error;
     }
   }
 
-  // public async deleteRankingFighter(fighterId: string) {
-  //   try {
-  //     await this.prisma.ranking.delete({ where: { fighterId } });
-  //   } catch (error: any) {
-  //     if (error.code === 'P2025') {
-  //       throw new NotFoundException('Fighter not found.');
-  //     }
+  public async deleteRankingFighter(fighterId: string) {
+    try {
+      await this.prisma.ranking.delete({ where: { fighterId } });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Fighter not found in ranking.');
+      }
 
-  //     throw error;
-  //   }
-  // }
+      throw error;
+    }
+  }
 }

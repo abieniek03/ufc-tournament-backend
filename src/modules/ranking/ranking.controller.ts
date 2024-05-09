@@ -6,8 +6,10 @@ import {
   Get,
   Param,
   Put,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RankingService } from './ranking.service';
 import { Ranking as RankingModel } from '@prisma/client';
 import { CreateRankingDto, UpdateRankingDto } from './dto/ranking.dto';
@@ -35,9 +37,26 @@ export class RankingController {
   @UseGuards(new AdminAuthGuard())
   @Put(':fighterId')
   async editRanking(
-    @Param('fighter-id') fighterId: string,
+    @Param('fighterId') fighterId: string,
     @Body() data: UpdateRankingDto,
   ): Promise<any> {
     return await this.rankingService.editRanking(fighterId, data);
+  }
+
+  @UseGuards(new AdminAuthGuard())
+  @Delete(':fighterId')
+  @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
+  async deleteWeightclass(
+    @Param('fighterId') fighterId: string,
+  ): Promise<void> {
+    await this.rankingService.deleteRankingFighter(fighterId);
   }
 }
