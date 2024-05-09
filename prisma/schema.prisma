@@ -64,3 +64,15 @@ model Ranking {
 
   @@map("rankings")
 }
+
+model Tournament {
+  id            String   @id @default(uuid())
+  name          String
+  weightclassId String
+  fighters      String[]
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("tournaments")
+}
