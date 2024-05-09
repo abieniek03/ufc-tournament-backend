@@ -19,12 +19,35 @@ enum Sex {
 }
 
 model Weightclass {
-  id        String   @unique
+  id        String    @id @unique
   name      String
   sex       Sex
   limit     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Fighter   Fighter[]
 
   @@map("weightclasses")
+}
+
+model Fighter {
+  id            String       @id @unique
+  firstName     String
+  lastName      String
+  nickname      String
+  birthDate     DateTime
+  sex           Sex
+  nationality   String
+  nationalityId String
+  city          String
+  weightclassId String
+  win           Int
+  lose          Int
+  draw          Int
+  noContest     Int
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  Weightclass   Weightclass? @relation(fields: [weightclassId], references: [id])
+
+  @@map("fighters")
 }
