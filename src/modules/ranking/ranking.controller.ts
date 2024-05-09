@@ -23,11 +23,39 @@ export class RankingController {
 
   @UseGuards(new AdminAuthGuard())
   @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async addRanking(@Body() data: CreateRankingDto): Promise<RankingModel> {
     return await this.rankingService.addRanking(data);
   }
 
   @Get(':weightclass')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async getWeightclassRanking(
     @Param('weightclass') weightclassId: string,
   ): Promise<WeightclassRankingResponse[]> {
@@ -36,6 +64,26 @@ export class RankingController {
 
   @UseGuards(new AdminAuthGuard())
   @Put(':fighterId')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   async editRanking(
     @Param('fighterId') fighterId: string,
     @Body() data: UpdateRankingDto,
