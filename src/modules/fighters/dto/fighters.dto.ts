@@ -44,20 +44,29 @@ export class CreateFighterDto {
 
 export class UpdateFighterDto {
   @ApiProperty()
-  nationality: string;
+  firstName?: string;
 
   @ApiProperty()
-  nationalityId: string;
+  lastName?: string;
 
   @ApiProperty()
-  win: number;
+  nickname?: string;
 
   @ApiProperty()
-  lose: number;
+  nationality?: string;
 
   @ApiProperty()
-  draw: number;
+  nationalityId?: string;
 
   @ApiProperty()
-  noContest: number;
+  win?: number;
+
+  @ApiProperty()
+  lose?: number;
+
+  @ApiProperty()
+  draw?: number;
+
+  @ApiProperty()
+  noContest?: number;
 }

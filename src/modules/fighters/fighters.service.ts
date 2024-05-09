@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateFighterDto } from './dto/fighters.dto';
+import { CreateFighterDto, UpdateFighterDto } from './dto/fighters.dto';
 import { Fighter, Sex } from '@prisma/client';
 
 @Injectable()
@@ -55,7 +55,7 @@ export class FightersService {
     }
   }
 
-  public async getFighterById(id: string) {
+  public async getFighterById(id: string): Promise<Fighter> {
     try {
       const data = await this.prisma.fighter.findFirst({
         where: { id },
@@ -65,6 +65,33 @@ export class FightersService {
 
       return data;
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async editFighter(
+    id: string,
+    data: UpdateFighterDto,
+  ): Promise<Fighter> {
+    try {
+      return await this.prisma.fighter.update({ where: { id }, data });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Fighter not found.');
+      }
+
+      throw error;
+    }
+  }
+
+  public async deleteFighter(id: string): Promise<any> {
+    try {
+      await this.prisma.fighter.delete({ where: { id } });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Fighter not found.');
+      }
+
       throw error;
     }
   }
