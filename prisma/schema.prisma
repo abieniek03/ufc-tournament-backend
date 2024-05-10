@@ -84,7 +84,7 @@ model TournamentScore {
   userId            String
   tournamentId      String
   fighterId         String
-  ranking           Int
+  ranking           Int?
   win               Int         @default(0)
   lose              Int         @default(0)
   draw              Int         @default(0)
