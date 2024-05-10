@@ -6,11 +6,15 @@ import {
   Headers,
   Get,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
 import { Tournament as TournamentModel } from '@prisma/client';
-import { CreateTournamentDto } from './dto/tournaments.dto';
+import {
+  CreateTournamentDto,
+  UpdateTournamentDto,
+} from './dto/tournaments.dto';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 
 @UseGuards(new ClerkAuthGuard())
@@ -88,5 +92,34 @@ export class TournamentsController {
     @Param('id') id: string,
   ): Promise<TournamentModel> {
     return await this.tournamentsService.getTournamentById(userId, id);
+  }
+
+  @Patch(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
+  async editTournament(
+    @Headers('user-id') userId: string,
+    @Param('id') id: string,
+    @Body() data: UpdateTournamentDto,
+  ): Promise<TournamentModel> {
+    return await this.tournamentsService.editTournament(userId, id, data);
   }
 }
