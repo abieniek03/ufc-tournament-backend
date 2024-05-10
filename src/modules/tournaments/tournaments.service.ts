@@ -103,4 +103,19 @@ export class TournamentsService {
       throw error;
     }
   }
+
+  public async deleteTournament(userId: string, id: string): Promise<any> {
+    try {
+      const tournament = await this.prisma.tournament.delete({ where: { id } });
+
+      if (tournament.userId !== userId)
+        throw new ForbiddenException('You are not owner of this tournament.');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Tournament not found in ranking.');
+      }
+
+      throw error;
+    }
+  }
 }

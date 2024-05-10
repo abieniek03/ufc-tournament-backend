@@ -7,6 +7,8 @@ import {
   Get,
   Param,
   Patch,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
@@ -101,7 +103,7 @@ export class TournamentsController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request.',
+    description: 'Bad request',
   })
   @ApiResponse({
     status: 401,
@@ -121,5 +123,30 @@ export class TournamentsController {
     @Body() data: UpdateTournamentDto,
   ): Promise<TournamentModel> {
     return await this.tournamentsService.editTournament(userId, id, data);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
+  async deleteWeightclass(
+    @Headers('user-id') userId: string,
+    @Param('id') id: string,
+  ): Promise<void> {
+    await this.tournamentsService.deleteTournament(userId, id);
   }
 }
