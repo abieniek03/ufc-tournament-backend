@@ -23,13 +23,37 @@ export class TournamentsService {
       const fighters = data.fighters.length;
 
       if (fighters === 8 || fighters === 16) {
-        return await this.prisma.tournament.create({
+        const createdTournament = await this.prisma.tournament.create({
           data: {
             ...data,
             userId,
             fighters,
           },
         });
+        console.log(createdTournament.id);
+
+        if (createdTournament) {
+          for (const fighter of data.fighters) {
+            //   try {
+            await this.prisma.tournamentScore.create({
+              data: {
+                userId,
+                tournamentId: createdTournament.id,
+                fighterId: fighter.split('#')[0],
+                ranking:
+                  fighter.split('#')[1] === 'NR'
+                    ? null
+                    : parseInt(fighter.split('#')[1]),
+              },
+            });
+            //   } catch (error: any) {
+            //     console.log(error);
+            //     throw error;
+            //   }
+          }
+        }
+
+        return createdTournament;
       } else {
         throw new BadRequestException('You must select 8 or 16 fighters.');
       }
