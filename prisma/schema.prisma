@@ -96,7 +96,7 @@ model TournamentScore {
   positionIndex     Int         @default(0)
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
-  tournament        Tournament? @relation(fields: [tournamentId], references: [id])
+  tournament        Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   fighter           Fighter?    @relation(fields: [fighterId], references: [id])
 
   @@map("tournaments-scores")

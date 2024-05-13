@@ -172,7 +172,11 @@ export class TournamentsService {
 
       return tournamentScore;
     } catch (error: any) {
-      console.log(error);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(
+          'Tournament score not found. Probably tournament not exist.',
+        );
+      }
       throw error;
     }
   }
