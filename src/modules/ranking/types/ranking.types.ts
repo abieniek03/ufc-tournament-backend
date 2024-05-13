@@ -1,8 +1,12 @@
 export interface WeightclassRankingResponse {
-  weightclass: string;
-  id: string;
-  firstName: string;
-  lastName: string;
+  fighterId: string;
+  weightclassId: string;
   position: number;
   positionPrevious: number;
+  createdAt: Date;
+  updatedAt: Date;
+  fighter: {
+    firstName: string;
+    lastName: string;
+  };
 }

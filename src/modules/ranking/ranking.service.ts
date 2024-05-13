@@ -38,37 +38,19 @@ export class RankingService {
         orderBy: {
           position: 'asc',
         },
+        include: {
+          fighter: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
 
       if (!ranking.length) throw new NotFoundException('Ranking not found.');
 
-      const formatResponsePromises = ranking.map(async (el) => {
-        try {
-          const fighterData = await this.prisma.fighter.findUnique({
-            where: { id: el.fighterId },
-          });
-
-          const rankingFighterData = ranking.find(
-            (fighter: any) => fighter.fighterId === fighterData.id,
-          );
-
-          return {
-            weightclass: fighterData.weightclassId,
-            id: fighterData.id,
-            firstName: fighterData.firstName,
-            lastName: fighterData.lastName,
-            position: rankingFighterData.position,
-            positionPrevious: rankingFighterData.positionPrevious
-              ? rankingFighterData.positionPrevious -
-                rankingFighterData.position
-              : null,
-          };
-        } catch (error: any) {
-          throw error;
-        }
-      });
-
-      return await Promise.all(formatResponsePromises);
+      return ranking;
     } catch (error: any) {
       throw error;
     }
