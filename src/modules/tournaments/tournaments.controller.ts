@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
-import { Tournament as TournamentModel } from '@prisma/client';
+import {
+  Tournament as TournamentModel,
+  TournamentScore as TournamentScoreModel,
+} from '@prisma/client';
 import {
   CreateTournamentDto,
   UpdateTournamentDto,
@@ -148,5 +151,29 @@ export class TournamentsController {
     @Param('id') id: string,
   ): Promise<void> {
     await this.tournamentsService.deleteTournament(userId, id);
+  }
+
+  @Get(':id/score')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
+  async getTournamentScore(
+    @Headers('user-id') userId: string,
+    @Param('id') id: string,
+  ): Promise<TournamentScoreModel[]> {
+    return await this.tournamentsService.getTournamentScore(userId, id);
   }
 }

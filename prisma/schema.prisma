@@ -25,7 +25,7 @@ model Weightclass {
   limit     Int
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Fighter   Fighter[]
+  fighters  Fighter[]
 
   @@map("weightclasses")
 }
@@ -47,9 +47,9 @@ model Fighter {
   noContest       Int
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  Weightclass     Weightclass?      @relation(fields: [weightclassId], references: [id])
-  Ranking         Ranking[]
-  TournamentScore TournamentScore[]
+  weightclass     Weightclass?      @relation(fields: [weightclassId], references: [id])
+  ranking         Ranking[]
+  tournamentScore TournamentScore[]
 
   @@map("fighters")
 }
@@ -61,7 +61,7 @@ model Ranking {
   positionPrevious Int?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  Fighter          Fighter? @relation(fields: [fighterId], references: [id])
+  fighter          Fighter? @relation(fields: [fighterId], references: [id])
 
   @@map("rankings")
 }
@@ -74,7 +74,7 @@ model Tournament {
   userId          String
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  TournamentScore TournamentScore[]
+  tournamentScore TournamentScore[]
 
   @@map("tournaments")
 }
@@ -85,6 +85,7 @@ model TournamentScore {
   tournamentId      String
   fighterId         String
   ranking           Int?
+  fights            Int         @default(0)
   win               Int         @default(0)
   lose              Int         @default(0)
   draw              Int         @default(0)
@@ -92,10 +93,11 @@ model TournamentScore {
   secondRoundFinish Int         @default(0)
   thirdRoundFinish  Int         @default(0)
   points            Int         @default(0)
+  positionIndex     Int         @default(0)
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
-  Tournament        Tournament? @relation(fields: [tournamentId], references: [id])
-  Fighter           Fighter?    @relation(fields: [fighterId], references: [id])
+  tournament        Tournament? @relation(fields: [tournamentId], references: [id])
+  fighter           Fighter?    @relation(fields: [fighterId], references: [id])
 
   @@map("tournaments-scores")
 }

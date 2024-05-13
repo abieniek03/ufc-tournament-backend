@@ -9,7 +9,7 @@ import {
   CreateTournamentDto,
   UpdateTournamentDto,
 } from './dto/tournaments.dto';
-import { Tournament } from '@prisma/client';
+import { Tournament, TournamentScore } from '@prisma/client';
 
 @Injectable()
 export class TournamentsService {
@@ -143,6 +143,36 @@ export class TournamentsService {
         throw new NotFoundException('Tournament not found in ranking.');
       }
 
+      throw error;
+    }
+  }
+
+  public async getTournamentScore(
+    userId: string,
+    id: string,
+  ): Promise<TournamentScore[]> {
+    try {
+      const tournamentScore = await this.prisma.tournamentScore.findMany({
+        where: { tournamentId: id },
+        orderBy: [{ positionIndex: 'desc' }, { points: 'desc' }],
+        include: {
+          fighter: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+
+      tournamentScore.forEach((el) => {
+        if (el.userId !== userId)
+          throw new ForbiddenException('You are not owner of this tournament.');
+      });
+
+      return tournamentScore;
+    } catch (error: any) {
+      console.log(error);
       throw error;
     }
   }
