@@ -40,6 +40,41 @@ export class TournamentsService {
     }
   }
 
+  private async setUpTournamentFights(tournamentId: string): Promise<any> {
+    try {
+      const allFighters = await this.prisma.tournamentScore.findMany({
+        orderBy: { ranking: 'asc' },
+        select: {
+          fighterId: true,
+        },
+      });
+
+      const firstRoundFights: number = allFighters.length / 2;
+      const mostRankedFighters = allFighters.slice(0, firstRoundFights);
+
+      if (allFighters.length) {
+        for (const fighter of mostRankedFighters) {
+          try {
+            await this.prisma.tournamentFight.create({
+              data: {
+                tournamentId,
+                level: 'ROUND_1',
+                redFighterId: fighter.fighterId,
+              },
+            });
+          } catch (error: any) {
+            throw error;
+          }
+        }
+      }
+
+      return { mostRankedFighters, firstRoundFights };
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   public async createTournament(
     userId: string,
     data: CreateTournamentDto,
@@ -57,7 +92,7 @@ export class TournamentsService {
         });
 
         await this.createTournamentScore(createdTournament, data.fighters);
-
+        await this.setUpTournamentFights(createdTournament.id);
         return createdTournament;
       } else {
         throw new BadRequestException('You must select 8 or 16 fighters.');

@@ -18,6 +18,29 @@ enum Sex {
   FEMALE
 }
 
+enum Level {
+  ROUND_1
+  RONUD_2
+  QUARTERFINAL
+  SEMIFINAL
+  FINAL
+}
+
+enum Winner {
+  RED
+  BLUE
+  DRAW
+}
+
+enum Method {
+  KO
+  TKO
+  SUB
+  UD
+  SD
+  MD
+}
+
 model Weightclass {
   id        String    @id @unique
   name      String
@@ -50,6 +73,9 @@ model Fighter {
   weightclass     Weightclass?      @relation(fields: [weightclassId], references: [id])
   ranking         Ranking[]
   tournamentScore TournamentScore[]
+  tournamentFight TournamentFight[]
+  redFighter      TournamentFight[] @relation("redFighter")
+  blueFighter     TournamentFight[] @relation("blueFighter")
 
   @@map("fighters")
 }
@@ -67,14 +93,15 @@ model Ranking {
 }
 
 model Tournament {
-  id              String            @id @default(uuid())
-  name            String
-  weightclassId   String
-  fighters        Int
-  userId          String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  tournamentScore TournamentScore[]
+  id            String            @id @default(uuid())
+  name          String
+  weightclassId String
+  fighters      Int
+  userId        String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  score         TournamentScore[]
+  fights        TournamentFight[]
 
   @@map("tournaments")
 }
@@ -100,4 +127,24 @@ model TournamentScore {
   fighter           Fighter?    @relation(fields: [fighterId], references: [id])
 
   @@map("tournaments-scores")
+}
+
+model TournamentFight {
+  id            String      @id @default(uuid())
+  tournamentId  String
+  level         Level
+  redFighterId  String?
+  blueFighterId String?
+  winner        Winner?
+  method        Method?
+  round         Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id])
+  blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id])
+  Fighter       Fighter?    @relation(fields: [fighterId], references: [id])
+  fighterId     String?
+
+  @@map("tournaments-fights")
 }
