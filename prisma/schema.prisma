@@ -73,7 +73,6 @@ model Fighter {
   weightclass     Weightclass? @relation(fields: [weightclassId], references: [id])
   ranking         Ranking[]
   tournamentScore Score[]
-  tournamentFight Fight[]
   redFighter      Fight[]      @relation("redFighter")
   blueFighter     Fight[]      @relation("blueFighter")
 
@@ -135,7 +134,7 @@ model Fight {
   level         Level
   redFighterId  String?
   blueFighterId String?
-  winner        Winner?
+  winner        String?
   method        Method?
   round         Int?
   createdAt     DateTime    @default(now())
@@ -143,8 +142,6 @@ model Fight {
   tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id])
   blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id])
-  Fighter       Fighter?    @relation(fields: [fighterId], references: [id])
-  fighterId     String?
 
   @@map("fights")
 }

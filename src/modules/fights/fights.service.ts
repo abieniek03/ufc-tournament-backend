@@ -10,6 +10,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
 import { FightBaseResponse } from './types/fight.types';
+import { UpdateFightResultDto } from './dto/fight.dto';
 
 @UseGuards(new ClerkAuthGuard())
 @Injectable()
@@ -135,6 +136,73 @@ export class FightsService {
       } catch (error: any) {
         throw error;
       }
+    }
+  }
+
+  public async updateResult(
+    userId: string,
+    fightId: string,
+    data: UpdateFightResultDto,
+  ): Promise<any> {
+    try {
+      const fight = await this.prisma.fight.findUnique({
+        where: { id: fightId },
+        include: {
+          tournament: {
+            select: {
+              userId: true,
+            },
+          },
+        },
+      });
+
+      if (!fight) throw new NotFoundException('Fight not found.');
+
+      if (fight.tournament.userId !== userId)
+        throw new ForbiddenException('You are not owner of this tournament.');
+
+      const redFighterScore = await this.prisma.score.findFirst({
+        where: {
+          tournamentId: fight.tournamentId,
+          fighterId: fight.redFighterId,
+        },
+      });
+
+      const blueFighterScore = await this.prisma.score.findFirst({
+        where: {
+          tournamentId: fight.tournamentId,
+          fighterId: fight.blueFighterId,
+        },
+      });
+
+      console.log(redFighterScore);
+      console.log(blueFighterScore);
+
+      await this.prisma.score.update({
+        where: {
+          id: redFighterScore.id,
+        },
+        data: {
+          win: redFighterScore.win + 1,
+        },
+      });
+
+      await this.prisma.score.update({
+        where: {
+          id: redFighterScore.id,
+        },
+        data: {
+          win: redFighterScore.win + 1,
+        },
+      });
+
+      return await this.prisma.fight.update({
+        where: { id: fightId },
+        data,
+      });
+    } catch (error: any) {
+      console.log(error);
+      throw error;
     }
   }
 }
