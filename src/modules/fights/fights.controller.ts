@@ -5,6 +5,7 @@ import {
   Headers,
   Param,
   Query,
+  Post,
 } from '@nestjs/common';
 import { FightsService } from './fights.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -45,5 +46,30 @@ export class FightsController {
       tournamentId,
       level,
     );
+  }
+
+  @Post(':fightId')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
+  async drawOponent(
+    @Headers('user-id') userId: string,
+    @Param('fightId') fightId: string,
+    @Query('level') level: Level,
+  ): Promise<any> {
+    return await this.fightService.drawOponent(userId, fightId, level);
   }
 }
