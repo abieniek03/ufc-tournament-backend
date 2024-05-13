@@ -6,6 +6,7 @@ import {
   Param,
   Query,
   Post,
+  Patch,
 } from '@nestjs/common';
 import { FightsService } from './fights.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -48,7 +49,7 @@ export class FightsController {
     );
   }
 
-  @Post(':fightId')
+  @Patch(':tournamentId')
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -67,9 +68,9 @@ export class FightsController {
   })
   async drawOponent(
     @Headers('user-id') userId: string,
-    @Param('fightId') fightId: string,
+    @Param('tournamentId') tournamentId: string,
     @Query('level') level: Level,
   ): Promise<any> {
-    return await this.fightService.drawOponent(userId, fightId, level);
+    return await this.fightService.drawOponent(userId, tournamentId, level);
   }
 }

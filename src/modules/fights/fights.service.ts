@@ -59,23 +59,31 @@ export class FightsService {
 
   public async drawOponent(
     userId: string,
-    fightId: string,
+    tournamentId: string,
     level: Level,
   ): Promise<any> {
     if (level === 'ROUND_1') {
       try {
-        const fight = await this.prisma.fight.findUnique({
-          where: { id: fightId },
-          select: {
-            id: true,
-            tournamentId: true,
-            redFighterId: true,
-            blueFighterId: true,
+        const allFights = await this.prisma.fight.findMany({
+          where: { tournamentId, level },
+          include: {
+            tournament: {
+              select: {
+                userId: true,
+              },
+            },
           },
         });
 
-        if (fight.blueFighterId)
-          throw new ConflictException('This fight is already booked.');
+        if (allFights[0].tournament.userId !== userId)
+          throw new ForbiddenException('You are not owner of this tournament.');
+
+        allFights.forEach((el) => {
+          if (el.blueFighterId)
+            throw new ConflictException(
+              'All fights already booked for this round.',
+            );
+        });
 
         const allFighters = await this.prisma.score.findMany({
           orderBy: { ranking: 'desc' },
@@ -85,32 +93,45 @@ export class FightsService {
         });
 
         const opponentsAll = allFighters.slice(0, allFighters.length / 2);
-        const opponentsBusy = await this.prisma.fight.findMany({
-          where: { tournamentId: fight.tournamentId },
+
+        for (const fight of allFights) {
+          const opponentsBusy = await this.prisma.fight.findMany({
+            where: { tournamentId: fight.tournamentId },
+            select: {
+              blueFighterId: true,
+            },
+          });
+
+          const opponentsFree = opponentsAll.filter(
+            (opponent) =>
+              !opponentsBusy.some(
+                (budsyOpponent) =>
+                  budsyOpponent.blueFighterId === opponent.fighterId,
+              ),
+          );
+
+          await this.prisma.fight.update({
+            where: {
+              id: fight.id,
+            },
+            data: {
+              blueFighterId:
+                opponentsFree[Math.floor(Math.random() * opponentsFree.length)]
+                  .fighterId,
+            },
+          });
+        }
+
+        return await this.prisma.fight.findMany({
+          where: { tournamentId },
           select: {
+            id: true,
+            tournamentId: true,
+            redFighterId: true,
             blueFighterId: true,
           },
         });
-
-        const opponentsFree = opponentsAll.filter(
-          (opponent) =>
-            !opponentsBusy.some(
-              (budsyOpponent) =>
-                budsyOpponent.blueFighterId === opponent.fighterId,
-            ),
-        );
-        return await this.prisma.fight.update({
-          where: {
-            id: fight.id,
-          },
-          data: {
-            blueFighterId:
-              opponentsFree[Math.floor(Math.random() * opponentsAll.length)]
-                .fighterId,
-          },
-        });
       } catch (error: any) {
-        console.log(error);
         throw error;
       }
     }
