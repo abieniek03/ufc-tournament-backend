@@ -20,7 +20,7 @@ enum Sex {
 
 enum Level {
   ROUND_1
-  RONUD_2
+  ROUND_2
   QUARTERFINAL
   SEMIFINAL
   FINAL
@@ -54,7 +54,7 @@ model Weightclass {
 }
 
 model Fighter {
-  id              String            @id @unique
+  id              String       @id @unique
   firstName       String
   lastName        String
   nickname        String
@@ -68,14 +68,14 @@ model Fighter {
   lose            Int
   draw            Int
   noContest       Int
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  weightclass     Weightclass?      @relation(fields: [weightclassId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  weightclass     Weightclass? @relation(fields: [weightclassId], references: [id])
   ranking         Ranking[]
   tournamentScore Score[]
   tournamentFight Fight[]
-  redFighter      Fight[] @relation("redFighter")
-  blueFighter     Fight[] @relation("blueFighter")
+  redFighter      Fight[]      @relation("redFighter")
+  blueFighter     Fight[]      @relation("blueFighter")
 
   @@map("fighters")
 }
@@ -93,13 +93,13 @@ model Ranking {
 }
 
 model Tournament {
-  id            String            @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   weightclassId String
   fighters      Int
   userId        String
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   score         Score[]
   fights        Fight[]
 
