@@ -178,38 +178,4 @@ export class TournamentsService {
       throw error;
     }
   }
-
-  public async getTournamentScore(
-    userId: string,
-    id: string,
-  ): Promise<Score[]> {
-    try {
-      const tournamentScore = await this.prisma.score.findMany({
-        where: { tournamentId: id },
-        orderBy: [{ positionIndex: 'desc' }, { points: 'desc' }],
-        include: {
-          fighter: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-
-      tournamentScore.forEach((el) => {
-        if (el.userId !== userId)
-          throw new ForbiddenException('You are not owner of this tournament.');
-      });
-
-      return tournamentScore;
-    } catch (error: any) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(
-          'Tournament score not found. Probably tournament not exist.',
-        );
-      }
-      throw error;
-    }
-  }
 }

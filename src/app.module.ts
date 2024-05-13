@@ -4,6 +4,7 @@ import { WeightclassModule } from './modules/weightclass/weightclass.module';
 import { FightersModule } from './modules/fighters/fighters.module';
 import { RankingModule } from './modules/ranking/ranking.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
+import { ScoreModule } from './modules/score/score.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
     FightersModule,
     RankingModule,
     TournamentsModule,
+    ScoreModule,
   ],
 })
 export class AppModule {}

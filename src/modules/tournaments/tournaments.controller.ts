@@ -152,28 +152,4 @@ export class TournamentsController {
   ): Promise<void> {
     await this.tournamentsService.deleteTournament(userId, id);
   }
-
-  @Get(':id/score')
-  @ApiResponse({
-    status: 200,
-    description: 'Success',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not found',
-  })
-  async getTournamentScore(
-    @Headers('user-id') userId: string,
-    @Param('id') id: string,
-  ): Promise<ScoreModel[]> {
-    return await this.tournamentsService.getTournamentScore(userId, id);
-  }
 }
