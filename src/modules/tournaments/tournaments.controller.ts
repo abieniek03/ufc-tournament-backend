@@ -14,7 +14,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
 import {
   Tournament as TournamentModel,
-  TournamentScore as TournamentScoreModel,
+  Score as ScoreModel,
 } from '@prisma/client';
 import {
   CreateTournamentDto,
@@ -173,7 +173,7 @@ export class TournamentsController {
   async getTournamentScore(
     @Headers('user-id') userId: string,
     @Param('id') id: string,
-  ): Promise<TournamentScoreModel[]> {
+  ): Promise<ScoreModel[]> {
     return await this.tournamentsService.getTournamentScore(userId, id);
   }
 }

@@ -72,10 +72,10 @@ model Fighter {
   updatedAt       DateTime          @updatedAt
   weightclass     Weightclass?      @relation(fields: [weightclassId], references: [id])
   ranking         Ranking[]
-  tournamentScore TournamentScore[]
-  tournamentFight TournamentFight[]
-  redFighter      TournamentFight[] @relation("redFighter")
-  blueFighter     TournamentFight[] @relation("blueFighter")
+  tournamentScore Score[]
+  tournamentFight Fight[]
+  redFighter      Fight[] @relation("redFighter")
+  blueFighter     Fight[] @relation("blueFighter")
 
   @@map("fighters")
 }
@@ -100,13 +100,13 @@ model Tournament {
   userId        String
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  score         TournamentScore[]
-  fights        TournamentFight[]
+  score         Score[]
+  fights        Fight[]
 
   @@map("tournaments")
 }
 
-model TournamentScore {
+model Score {
   id                String      @id @default(uuid())
   userId            String
   tournamentId      String
@@ -126,10 +126,10 @@ model TournamentScore {
   tournament        Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   fighter           Fighter?    @relation(fields: [fighterId], references: [id])
 
-  @@map("tournaments-scores")
+  @@map("scores")
 }
 
-model TournamentFight {
+model Fight {
   id            String      @id @default(uuid())
   tournamentId  String
   level         Level
@@ -146,5 +146,5 @@ model TournamentFight {
   Fighter       Fighter?    @relation(fields: [fighterId], references: [id])
   fighterId     String?
 
-  @@map("tournaments-fights")
+  @@map("fights")
 }

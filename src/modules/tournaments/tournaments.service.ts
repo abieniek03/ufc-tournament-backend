@@ -9,7 +9,7 @@ import {
   CreateTournamentDto,
   UpdateTournamentDto,
 } from './dto/tournaments.dto';
-import { Tournament, TournamentScore } from '@prisma/client';
+import { Tournament, Score } from '@prisma/client';
 
 @Injectable()
 export class TournamentsService {
@@ -22,7 +22,7 @@ export class TournamentsService {
     if (tournament) {
       for (const fighter of allFighters) {
         try {
-          await this.prisma.tournamentScore.create({
+          await this.prisma.score.create({
             data: {
               userId: tournament.userId,
               tournamentId: tournament.id,
@@ -42,7 +42,7 @@ export class TournamentsService {
 
   private async setUpTournamentFights(tournamentId: string): Promise<void> {
     try {
-      const allFighters = await this.prisma.tournamentScore.findMany({
+      const allFighters = await this.prisma.score.findMany({
         orderBy: { ranking: 'asc' },
         select: {
           fighterId: true,
@@ -55,7 +55,7 @@ export class TournamentsService {
       if (allFighters.length) {
         for (const fighter of mostRankedFighters) {
           try {
-            await this.prisma.tournamentFight.create({
+            await this.prisma.fight.create({
               data: {
                 tournamentId,
                 level: 'ROUND_1',
@@ -182,9 +182,9 @@ export class TournamentsService {
   public async getTournamentScore(
     userId: string,
     id: string,
-  ): Promise<TournamentScore[]> {
+  ): Promise<Score[]> {
     try {
-      const tournamentScore = await this.prisma.tournamentScore.findMany({
+      const tournamentScore = await this.prisma.score.findMany({
         where: { tournamentId: id },
         orderBy: [{ positionIndex: 'desc' }, { points: 'desc' }],
         include: {
