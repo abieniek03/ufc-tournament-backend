@@ -40,7 +40,7 @@ export class TournamentsService {
     }
   }
 
-  private async setUpTournamentFights(tournamentId: string): Promise<any> {
+  private async setUpTournamentFights(tournamentId: string): Promise<void> {
     try {
       const allFighters = await this.prisma.tournamentScore.findMany({
         orderBy: { ranking: 'asc' },
@@ -67,10 +67,7 @@ export class TournamentsService {
           }
         }
       }
-
-      return { mostRankedFighters, firstRoundFights };
     } catch (error: any) {
-      console.log(error);
       throw error;
     }
   }
