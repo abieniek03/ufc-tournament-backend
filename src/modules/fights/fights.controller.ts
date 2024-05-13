@@ -5,7 +5,6 @@ import {
   Headers,
   Param,
   Query,
-  Post,
   Patch,
 } from '@nestjs/common';
 import { FightsService } from './fights.service';
@@ -13,6 +12,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Fight as FightModel } from '@prisma/client';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Level } from '@prisma/client';
+import { FightBaseResponse } from './types/fight.types';
 
 @UseGuards(new ClerkAuthGuard())
 @ApiTags('Fights')
@@ -66,11 +66,15 @@ export class FightsController {
     status: 404,
     description: 'Not found',
   })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict',
+  })
   async drawOponent(
     @Headers('user-id') userId: string,
     @Param('tournamentId') tournamentId: string,
     @Query('level') level: Level,
-  ): Promise<any> {
+  ): Promise<FightBaseResponse[]> {
     return await this.fightService.drawOponent(userId, tournamentId, level);
   }
 }

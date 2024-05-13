@@ -9,6 +9,7 @@ import { Level } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
+import { FightBaseResponse } from './types/fight.types';
 
 @UseGuards(new ClerkAuthGuard())
 @Injectable()
@@ -61,7 +62,7 @@ export class FightsService {
     userId: string,
     tournamentId: string,
     level: Level,
-  ): Promise<any> {
+  ): Promise<FightBaseResponse[]> {
     if (level === 'ROUND_1') {
       try {
         const allFights = await this.prisma.fight.findMany({
