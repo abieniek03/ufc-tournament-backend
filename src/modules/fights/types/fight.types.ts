@@ -4,3 +4,8 @@ export interface FightBaseResponse {
   redFighterId: string;
   blueFighterId: string;
 }
+
+export interface FighterDraw {
+  id: string;
+  index: number;
+}

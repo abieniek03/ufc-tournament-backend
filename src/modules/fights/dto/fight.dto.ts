@@ -5,3 +5,4 @@ export class UpdateFightResultDto {
   method: Method;
   round: number;
 }
+
