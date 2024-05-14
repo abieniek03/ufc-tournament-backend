@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
-import { Level } from '@prisma/client';
+import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
@@ -139,6 +139,72 @@ export class FightsService {
     }
   }
 
+  private async updateFighterScore(
+    fighter: Score,
+    data: UpdateFightResultDto,
+  ): Promise<void> {
+    const calcPoints = (fighter: Score, data: UpdateFightResultDto) => {
+      if (data.winner === 'DRAW') {
+        return fighter.points + 1;
+      }
+
+      if (fighter.fighterId === data.winner) {
+        let bonusPoints = 0;
+        if (data.method[1] !== 'D') {
+          switch (data.round) {
+            case 1:
+              bonusPoints = 3;
+              break;
+            case 2:
+              bonusPoints = 2;
+              break;
+            default:
+              bonusPoints = 3;
+          }
+        }
+        return fighter.points + 3 + bonusPoints;
+      }
+
+      return fighter.points;
+    };
+
+    await this.prisma.score.update({
+      where: {
+        id: fighter.id,
+      },
+      data: {
+        fights: fighter.fights + 1,
+        win: data.winner === fighter.fighterId ? fighter.win + 1 : fighter.win,
+        lose:
+          data.winner !== fighter.fighterId && data.winner !== 'DRAW'
+            ? fighter.lose + 1
+            : fighter.lose,
+        draw: data.winner === 'DRAW' ? fighter.draw + 1 : fighter.draw,
+        firstRoundFinish:
+          data.winner === fighter.fighterId && data.round === 1
+            ? fighter.firstRoundFinish + 1
+            : fighter.firstRoundFinish,
+        secondRoundFinish:
+          data.winner === fighter.fighterId && data.round === 2
+            ? fighter.secondRoundFinish + 1
+            : fighter.secondRoundFinish,
+        thirdRoundFinish:
+          data.winner === fighter.fighterId &&
+          data.round === 3 &&
+          data.method[1] !== 'D'
+            ? fighter.thirdRoundFinish + 1
+            : fighter.thirdRoundFinish,
+        points: calcPoints(fighter, data),
+        positionIndex:
+          data.winner === fighter.fighterId
+            ? fighter.positionIndex + 1
+            : data.winner === 'DRAW'
+              ? fighter.positionIndex
+              : fighter.positionIndex - 1,
+      },
+    });
+  }
+
   public async updateResult(
     userId: string,
     fightId: string,
@@ -175,26 +241,8 @@ export class FightsService {
         },
       });
 
-      console.log(redFighterScore);
-      console.log(blueFighterScore);
-
-      await this.prisma.score.update({
-        where: {
-          id: redFighterScore.id,
-        },
-        data: {
-          win: redFighterScore.win + 1,
-        },
-      });
-
-      await this.prisma.score.update({
-        where: {
-          id: redFighterScore.id,
-        },
-        data: {
-          win: redFighterScore.win + 1,
-        },
-      });
+      await this.updateFighterScore(redFighterScore, data);
+      await this.updateFighterScore(blueFighterScore, data);
 
       return await this.prisma.fight.update({
         where: { id: fightId },
