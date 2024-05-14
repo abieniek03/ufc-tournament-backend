@@ -39,7 +39,9 @@ export class FightsService {
             },
           },
           tournament: {
-            select: { userId: true },
+            select: {
+              userId: true,
+            },
           },
         },
       });
@@ -57,6 +59,22 @@ export class FightsService {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  private async fightersFree(level: Level, allRoaster: any) {
+    const fights = await this.prisma.fight.findMany({ where: { level } });
+
+    const fightersBusy = [];
+
+    fights.forEach((el) =>
+      fightersBusy.push(el.redFighterId, el.blueFighterId),
+    );
+
+    const fightersFree = allRoaster.filter(
+      (el: string) => !fightersBusy.includes(el),
+    );
+
+    return fightersFree;
   }
 
   public async drawOponent(
@@ -134,6 +152,55 @@ export class FightsService {
           },
         });
       } catch (error: any) {
+        throw error;
+      }
+    }
+
+    if (level === 'ROUND_2') {
+      try {
+        const allWinners = await this.prisma.score.findMany({
+          where: {
+            win: 1,
+          },
+          orderBy: [
+            { positionIndex: 'desc' },
+            { points: 'desc' },
+            { ranking: 'asc' },
+          ],
+          select: {
+            fighterId: true,
+          },
+        });
+
+        const winnersRoaster = [];
+
+        allWinners.forEach((el) => winnersRoaster.push(el.fighterId));
+
+        if (winnersRoaster.length % 2 !== 0) {
+          const drawFighters = await this.prisma.score.findMany({
+            where: {
+              draw: 1,
+            },
+            orderBy: {
+              ranking: 'asc',
+            },
+            select: {
+              fighterId: true,
+            },
+          });
+
+          const luckyFighters = drawFighters.slice(0, drawFighters.length / 2);
+          luckyFighters.forEach((el) => winnersRoaster.push(el.fighterId));
+        }
+
+        const fightersFree = await this.fightersFree(level, winnersRoaster);
+        console.log(fightersFree);
+
+        for (let i = 0; i < winnersRoaster.length / 2; i++) {
+          console.log('elo');
+        }
+      } catch (error: any) {
+        console.log(error);
         throw error;
       }
     }
@@ -249,7 +316,6 @@ export class FightsService {
         data,
       });
     } catch (error: any) {
-      console.log(error);
       throw error;
     }
   }
