@@ -1,3 +1,5 @@
+export type FirstFight = 'WIN' | 'LOSE';
+
 export interface FightBaseResponse {
   id: string;
   tournamentId: string;

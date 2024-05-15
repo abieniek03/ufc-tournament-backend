@@ -9,7 +9,11 @@ import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
-import { FightBaseResponse, FighterDraw } from './types/fight.types';
+import {
+  FightBaseResponse,
+  FighterDraw,
+  FirstFight,
+} from './types/fight.types';
 import { UpdateFightResultDto } from './dto/fight.dto';
 
 @UseGuards(new ClerkAuthGuard())
@@ -84,6 +88,91 @@ export class FightsService {
       fighter.index > opponent.index ? fighter.id : opponent.id;
 
     return { redFighter, blueFighter };
+  }
+
+  private async drawFights(
+    tournamentId: string,
+    level: Level,
+    firstFight: FirstFight,
+  ) {
+    try {
+      const allFighters = await this.prisma.score.findMany({
+        where: {
+          win: firstFight === 'WIN' ? 1 : 0,
+          lose: firstFight === 'LOSE' ? 1 : 0,
+        },
+        orderBy: [
+          { positionIndex: 'desc' },
+          { points: 'desc' },
+          { ranking: 'asc' },
+        ],
+        select: {
+          fighterId: true,
+        },
+      });
+
+      const roaster: string[] = [];
+
+      allFighters.forEach((el) => roaster.push(el.fighterId));
+
+      if (roaster.length % 2 !== 0) {
+        const drawFighters = await this.prisma.score.findMany({
+          where: {
+            draw: 1,
+          },
+          orderBy: {
+            ranking: 'asc',
+          },
+          select: {
+            fighterId: true,
+          },
+        });
+
+        const luckyFighters = drawFighters.slice(
+          firstFight === 'WIN' ? 0 : drawFighters.length / 2,
+          firstFight === 'WIN' ? drawFighters.length / 2 : undefined,
+        );
+        luckyFighters.forEach((el) => roaster.push(el.fighterId));
+      }
+
+      for (let i = 0; i < allFighters.length / 2; i++) {
+        const fightersFree: string[] = await this.fightersFree(level, roaster);
+
+        const drawFighterIndex = Math.floor(
+          Math.random() * fightersFree.length,
+        );
+        const fighter: FighterDraw = {
+          id: fightersFree[drawFighterIndex],
+          index: drawFighterIndex,
+        };
+
+        const possibleOpponents = fightersFree.filter(
+          (el) => el !== fighter.id,
+        );
+
+        const drawOpponentIndex = Math.floor(
+          Math.random() * possibleOpponents.length,
+        );
+
+        const opponent: FighterDraw = {
+          id: possibleOpponents[drawOpponentIndex],
+          index: drawOpponentIndex,
+        };
+
+        const corners = this.selectCorners(fighter, opponent);
+
+        await this.prisma.fight.create({
+          data: {
+            tournamentId,
+            level,
+            redFighterId: corners.redFighter,
+            blueFighterId: corners.blueFighter,
+          },
+        });
+      }
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   public async drawOponent(
@@ -167,79 +256,8 @@ export class FightsService {
 
     if (level === 'ROUND_2') {
       try {
-        const allWinners = await this.prisma.score.findMany({
-          where: {
-            win: 1,
-          },
-          orderBy: [
-            { positionIndex: 'desc' },
-            { points: 'desc' },
-            { ranking: 'asc' },
-          ],
-          select: {
-            fighterId: true,
-          },
-        });
-
-        const winnersRoaster: string[] = [];
-
-        allWinners.forEach((el) => winnersRoaster.push(el.fighterId));
-
-        if (winnersRoaster.length % 2 !== 0) {
-          const drawFighters = await this.prisma.score.findMany({
-            where: {
-              draw: 1,
-            },
-            orderBy: {
-              ranking: 'asc',
-            },
-            select: {
-              fighterId: true,
-            },
-          });
-
-          const luckyFighters = drawFighters.slice(0, drawFighters.length / 2);
-          luckyFighters.forEach((el) => winnersRoaster.push(el.fighterId));
-        }
-
-        for (let i = 0; i < allWinners.length / 2; i++) {
-          const fightersFree: string[] = await this.fightersFree(
-            level,
-            winnersRoaster,
-          );
-
-          const drawFighterIndex = Math.floor(
-            Math.random() * fightersFree.length,
-          );
-          const fighter: FighterDraw = {
-            id: fightersFree[drawFighterIndex],
-            index: drawFighterIndex,
-          };
-
-          const possibleOpponents = fightersFree.filter(
-            (el) => el !== fighter.id,
-          );
-
-          const drawOpponentIndex = Math.floor(
-            Math.random() * possibleOpponents.length,
-          );
-
-          const opponent: FighterDraw = {
-            id: possibleOpponents[drawOpponentIndex],
-            index: drawOpponentIndex,
-          };
-
-          const corners = this.selectCorners(fighter, opponent);
-
-          await this.prisma.fight.create({
-            data: {
-              tournamentId,
-              level,
-              redFighterId: corners.redFighter,
-              blueFighterId: corners.blueFighter,
-            },
-          });
-        }
+        await this.drawFights(tournamentId, level, 'WIN');
+        await this.drawFights(tournamentId, level, 'LOSE');
       } catch (error: any) {
         throw error;
       }
