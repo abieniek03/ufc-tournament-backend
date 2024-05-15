@@ -12,3 +12,136 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum Level {
+  ROUND_1
+  ROUND_2
+  QUARTERFINAL
+  SEMIFINAL
+  FINAL
+}
+
+enum Winner {
+  RED
+  BLUE
+  DRAW
+}
+
+enum Method {
+  KO
+  TKO
+  SUB
+  UD
+  SD
+  MD
+}
+
+model Weightclass {
+  id        String    @id @unique
+  name      String
+  sex       Sex
+  limit     Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  fighters  Fighter[]
+
+  @@map("weightclasses")
+}
+
+model Fighter {
+  id              String       @id @unique
+  firstName       String
+  lastName        String
+  nickname        String
+  birthDate       DateTime
+  sex             Sex
+  nationality     String
+  nationalityId   String
+  city            String
+  weightclassId   String
+  win             Int
+  lose            Int
+  draw            Int
+  noContest       Int
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  weightclass     Weightclass? @relation(fields: [weightclassId], references: [id])
+  ranking         Ranking[]
+  tournamentScore Score[]
+  redFighter      Fight[]      @relation("redFighter")
+  blueFighter     Fight[]      @relation("blueFighter")
+
+  @@map("fighters")
+}
+
+model Ranking {
+  fighterId        String   @id @unique
+  weightclassId    String
+  position         Int
+  positionPrevious Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  fighter          Fighter? @relation(fields: [fighterId], references: [id])
+
+  @@map("rankings")
+}
+
+model Tournament {
+  id            String   @id @default(uuid())
+  name          String
+  weightclassId String
+  fighters      Int
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  score         Score[]
+  fights        Fight[]
+
+  @@map("tournaments")
+}
+
+model Score {
+  id                String      @id @default(uuid())
+  userId            String
+  tournamentId      String
+  fighterId         String
+  ranking           Int?
+  fights            Int         @default(0)
+  win               Int         @default(0)
+  lose              Int         @default(0)
+  draw              Int         @default(0)
+  firstRoundFinish  Int         @default(0)
+  secondRoundFinish Int         @default(0)
+  thirdRoundFinish  Int         @default(0)
+  points            Int         @default(0)
+  positionIndex     Int         @default(0)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  tournament        Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  fighter           Fighter?    @relation(fields: [fighterId], references: [id])
+
+  @@map("scores")
+}
+
+model Fight {
+  id            String      @id @default(uuid())
+  tournamentId  String
+  level         Level
+  redFighterId  String?
+  blueFighterId String?
+  winner        String?
+  method        Method?
+  round         Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id])
+  blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id])
+
+  @@map("fights")
+}
