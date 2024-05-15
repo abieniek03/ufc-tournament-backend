@@ -2,7 +2,7 @@ import { Controller, Get, Headers, Param, UseGuards } from '@nestjs/common';
 import { ScoreService } from './score.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Score as ScoreModel } from '@prisma/client';
-import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
+import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
 
 @UseGuards(new ClerkAuthGuard())
 @ApiTags('Score')

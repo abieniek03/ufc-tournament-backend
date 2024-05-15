@@ -12,15 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
-import {
-  Tournament as TournamentModel,
-  Score as ScoreModel,
-} from '@prisma/client';
+import { Tournament as TournamentModel } from '@prisma/client';
 import {
   CreateTournamentDto,
   UpdateTournamentDto,
 } from './dto/tournaments.dto';
-import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
+import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
 
 @UseGuards(new ClerkAuthGuard())
 @ApiTags('Tournaments')

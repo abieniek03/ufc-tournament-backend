@@ -13,7 +13,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RankingService } from './ranking.service';
 import { Ranking as RankingModel } from '@prisma/client';
 import { CreateRankingDto, UpdateRankingDto } from './dto/ranking.dto';
-import { AdminAuthGuard } from 'src/ guards/admin-auth.guard';
+import { AdminAuthGuard } from '../../guards/admin-auth.guard';
 import { WeightclassRankingResponse } from './types/ranking.types';
 
 @ApiTags('Ranking')

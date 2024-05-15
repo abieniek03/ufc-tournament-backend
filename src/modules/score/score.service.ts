@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Score } from '@prisma/client';
-import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
+import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 
 @UseGuards(new ClerkAuthGuard())
 @Injectable()

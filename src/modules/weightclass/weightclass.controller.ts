@@ -17,7 +17,7 @@ import {
   UpdateWeichtclassDto,
 } from './dto/weightclass.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AdminAuthGuard } from 'src/ guards/admin-auth.guard';
+import { AdminAuthGuard } from '../../guards/admin-auth.guard';
 
 @ApiTags('Weightclass')
 @Controller('weightclass')

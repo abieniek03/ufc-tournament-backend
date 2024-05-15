@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
+import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
 import { FighterDraw, FirstFight } from './types/fight.types';
 import { UpdateFightResultDto } from './dto/fight.dto';

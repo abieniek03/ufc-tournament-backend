@@ -13,7 +13,7 @@ import {
 import { FightersService } from './fighters.service';
 import { CreateFighterDto, UpdateFighterDto } from './dto/fighters.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AdminAuthGuard } from 'src/ guards/admin-auth.guard';
+import { AdminAuthGuard } from '../../guards/admin-auth.guard';
 import { Fighter as FighterModel, Sex } from '@prisma/client';
 
 @ApiTags('Fighters')
