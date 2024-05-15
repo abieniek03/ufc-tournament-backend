@@ -9,11 +9,7 @@ import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/ guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
-import {
-  FightBaseResponse,
-  FighterDraw,
-  FirstFight,
-} from './types/fight.types';
+import { FighterDraw, FirstFight } from './types/fight.types';
 import { UpdateFightResultDto } from './dto/fight.dto';
 
 @UseGuards(new ClerkAuthGuard())
@@ -94,7 +90,7 @@ export class FightsService {
     tournamentId: string,
     level: Level,
     firstFight: FirstFight,
-  ) {
+  ): Promise<void> {
     try {
       const allFighters = await this.prisma.score.findMany({
         where: {
@@ -175,11 +171,11 @@ export class FightsService {
     }
   }
 
-  public async drawOponent(
+  public async draw(
     userId: string,
     tournamentId: string,
     level: Level,
-  ): Promise<FightBaseResponse[]> {
+  ): Promise<void> {
     if (level === 'ROUND_1') {
       try {
         const allFights = await this.prisma.fight.findMany({
@@ -239,16 +235,6 @@ export class FightsService {
             },
           });
         }
-
-        return await this.prisma.fight.findMany({
-          where: { tournamentId },
-          select: {
-            id: true,
-            tournamentId: true,
-            redFighterId: true,
-            blueFighterId: true,
-          },
-        });
       } catch (error: any) {
         throw error;
       }

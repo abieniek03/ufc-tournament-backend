@@ -77,7 +77,12 @@ export class FightsController {
     @Param('tournamentId') tournamentId: string,
     @Query('level') level: Level,
   ): Promise<FightBaseResponse[]> {
-    return await this.fightService.drawOponent(userId, tournamentId, level);
+    await this.fightService.draw(userId, tournamentId, level);
+    return await this.fightService.getTournamentFights(
+      userId,
+      tournamentId,
+      level,
+    );
   }
 
   @Patch(':fightId')
