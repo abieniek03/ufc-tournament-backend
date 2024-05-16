@@ -9,7 +9,7 @@ import {
   CreateTournamentDto,
   UpdateTournamentDto,
 } from './dto/tournaments.dto';
-import { Tournament, Score } from '@prisma/client';
+import { Tournament } from '@prisma/client';
 
 @Injectable()
 export class TournamentsService {
@@ -103,6 +103,15 @@ export class TournamentsService {
     try {
       const tournaments = await this.prisma.tournament.findMany({
         where: { userId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          weightclass: {
+            select: {
+              name: true,
+              limit: true,
+            },
+          },
+        },
       });
 
       if (!tournaments.length)
@@ -121,6 +130,14 @@ export class TournamentsService {
     try {
       const tournament = await this.prisma.tournament.findUnique({
         where: { id },
+        include: {
+          weightclass: {
+            select: {
+              name: true,
+              limit: true,
+            },
+          },
+        },
       });
 
       if (!tournament) throw new NotFoundException('Tournament not found.');
