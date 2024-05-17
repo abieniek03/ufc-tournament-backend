@@ -139,6 +139,8 @@ model Fight {
   winner        String?
   method        Method?
   round         Int?
+  time          String?
+  description   String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
