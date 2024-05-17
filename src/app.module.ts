@@ -6,6 +6,7 @@ import { RankingModule } from './modules/ranking/ranking.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { ScoreModule } from './modules/score/score.module';
 import { FightsModule } from './modules/fights/fights.module';
+import { DrawModule } from './modules/draw/draw.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FightsModule } from './modules/fights/fights.module';
     FightersModule,
     RankingModule,
     TournamentsModule,
+    DrawModule,
     ScoreModule,
     FightsModule,
   ],
