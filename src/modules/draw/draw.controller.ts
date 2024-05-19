@@ -1,8 +1,10 @@
-import { Controller, Post, Headers, Param } from '@nestjs/common';
+import { Controller, Post, Headers, Param, UseGuards } from '@nestjs/common';
 import { DrawService } from './draw.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Level } from '@prisma/client';
+import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 
+@UseGuards(new ClerkAuthGuard())
 @ApiTags('Draw')
 @Controller('draw')
 export class DrawController {

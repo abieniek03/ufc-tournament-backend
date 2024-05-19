@@ -13,7 +13,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Fight as FightModel } from '@prisma/client';
 import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
 import { Level } from '@prisma/client';
-import { FightBaseResponse } from './types/fight.types';
 import { UpdateFightResultDto } from './dto/fight.dto';
 
 @UseGuards(new ClerkAuthGuard())
@@ -44,40 +43,6 @@ export class FightsController {
     @Param('tournamentId') tournamentId: string,
     @Query('level') level: Level,
   ): Promise<FightModel[]> {
-    return await this.fightService.getTournamentFights(
-      userId,
-      tournamentId,
-      level,
-    );
-  }
-
-  @Patch('/draw/:tournamentId')
-  @ApiResponse({
-    status: 200,
-    description: 'Success',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not found',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict',
-  })
-  async drawOponent(
-    @Headers('user-id') userId: string,
-    @Param('tournamentId') tournamentId: string,
-    @Query('level') level: Level,
-  ): Promise<FightBaseResponse[]> {
-    await this.fightService.draw(userId, tournamentId, level);
     return await this.fightService.getTournamentFights(
       userId,
       tournamentId,
