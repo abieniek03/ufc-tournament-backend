@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -9,7 +8,6 @@ import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
-import { FighterDraw, FirstFight } from './types/fight.types';
 import { UpdateFightResultDto } from './dto/fight.dto';
 
 @UseGuards(new ClerkAuthGuard())
@@ -36,6 +34,17 @@ export class FightsService {
             select: {
               firstName: true,
               lastName: true,
+            },
+          },
+
+          redScore: {
+            select: {
+              ranking: true,
+            },
+          },
+          blueScore: {
+            select: {
+              ranking: true,
             },
           },
           tournament: {
