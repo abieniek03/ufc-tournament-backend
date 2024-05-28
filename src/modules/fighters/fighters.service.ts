@@ -45,6 +45,13 @@ export class FightersService {
     try {
       const data = await this.prisma.fighter.findMany({
         where: sex || weightclassId ? { OR: [{ sex }, { weightclassId }] } : {},
+        include: {
+          ranking: {
+            select: {
+              position: true,
+            },
+          },
+        },
       });
 
       if (!data.length) throw new NotFoundException('Any fighters not found.');
@@ -59,6 +66,13 @@ export class FightersService {
     try {
       const data = await this.prisma.fighter.findFirst({
         where: { id },
+        include: {
+          ranking: {
+            select: {
+              position: true,
+            },
+          },
+        },
       });
 
       if (!data) throw new NotFoundException('Fighter not found.');
