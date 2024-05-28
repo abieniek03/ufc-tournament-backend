@@ -129,6 +129,11 @@ export class DrawService {
     tournamentId: string,
     level: Level,
   ): Promise<void> {
+    console.log(tournamentId);
+    console.log('===');
+    console.log('siema');
+    console.log(level);
+
     if (level === 'ROUND_1') {
       try {
         const allFights = await this.prisma.fight.findMany({
