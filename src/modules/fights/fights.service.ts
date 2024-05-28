@@ -140,7 +140,7 @@ export class FightsService {
     userId: string,
     fightId: string,
     data: UpdateFightResultDto,
-  ): Promise<any> {
+  ): Promise<Fight> {
     try {
       const fight = await this.prisma.fight.findUnique({
         where: { id: fightId },
