@@ -55,7 +55,7 @@ model Weightclass {
 }
 
 model Fighter {
-  id              String       @id @unique
+  id              String      @id @unique
   firstName       String
   lastName        String
   nickname        String
@@ -69,13 +69,13 @@ model Fighter {
   lose            Int
   draw            Int
   noContest       Int
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  weightclass     Weightclass? @relation(fields: [weightclassId], references: [id])
-  ranking         Ranking[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  weightclass     Weightclass @relation(fields: [weightclassId], references: [id])
+  ranking         Ranking?
   tournamentScore Score[]
-  redFighter      Fight[]      @relation("redFighter")
-  blueFighter     Fight[]      @relation("blueFighter")
+  redFighter      Fight[]     @relation("redFighter")
+  blueFighter     Fight[]     @relation("blueFighter")
 
   @@map("fighters")
 }
@@ -87,7 +87,7 @@ model Ranking {
   positionPrevious Int?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  fighter          Fighter? @relation(fields: [fighterId], references: [id])
+  fighter          Fighter  @relation(fields: [fighterId], references: [id])
 
   @@map("rankings")
 }

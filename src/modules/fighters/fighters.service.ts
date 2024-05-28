@@ -52,6 +52,11 @@ export class FightersService {
             },
           },
         },
+        orderBy: {
+          ranking: {
+            position: 'asc',
+          },
+        },
       });
 
       if (!data.length) throw new NotFoundException('Any fighters not found.');
