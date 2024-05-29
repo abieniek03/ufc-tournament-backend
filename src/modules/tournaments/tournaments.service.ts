@@ -43,7 +43,12 @@ export class TournamentsService {
   private async setUpTournamentFights(tournamentId: string): Promise<void> {
     try {
       const allFighters = await this.prisma.score.findMany({
-        orderBy: { ranking: 'asc' },
+        where: {
+          tournamentId,
+        },
+        orderBy: {
+          ranking: 'asc',
+        },
         select: {
           fighterId: true,
         },
@@ -79,7 +84,7 @@ export class TournamentsService {
     try {
       const fightersCount = data.fighters.length;
 
-      if (fightersCount === 8 || fightersCount === 6) {
+      if (fightersCount === 8 || fightersCount === 16) {
         const createdTournament = await this.prisma.tournament.create({
           data: {
             ...data,

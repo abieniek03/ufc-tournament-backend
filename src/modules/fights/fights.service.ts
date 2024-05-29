@@ -36,22 +36,14 @@ export class FightsService {
               lastName: true,
             },
           },
-
-          redScore: {
-            select: {
-              ranking: true,
-            },
-          },
-          blueScore: {
-            select: {
-              ranking: true,
-            },
-          },
           tournament: {
             select: {
               userId: true,
             },
           },
+        },
+        orderBy: {
+          createdAt: 'asc',
         },
       });
 
@@ -179,6 +171,14 @@ export class FightsService {
         where: { id: fightId },
         data,
       });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async deleteTournamentFights(id: string): Promise<void> {
+    try {
+      await this.prisma.fight.deleteMany({ where: { tournamentId: id } });
     } catch (error: any) {
       throw error;
     }

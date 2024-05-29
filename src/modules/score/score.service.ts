@@ -55,4 +55,12 @@ export class ScoreService {
       throw error;
     }
   }
+
+  public async deleteTournamentScore(id: string): Promise<void> {
+    try {
+      await this.prisma.tournament.deleteMany({ where: { id } });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }

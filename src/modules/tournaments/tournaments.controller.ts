@@ -12,18 +12,23 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentsService } from './tournaments.service';
+import { ScoreService } from '../score/score.service';
+import { FightsService } from '../fights/fights.service';
 import { Tournament as TournamentModel } from '@prisma/client';
 import {
   CreateTournamentDto,
   UpdateTournamentDto,
 } from './dto/tournaments.dto';
 import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
-
 @UseGuards(new ClerkAuthGuard())
 @ApiTags('Tournaments')
 @Controller('tournaments')
 export class TournamentsController {
-  constructor(private readonly tournamentsService: TournamentsService) {}
+  constructor(
+    private readonly tournamentsService: TournamentsService,
+    private readonly scoreService: ScoreService,
+    private readonly fightsService: FightsService,
+  ) {}
 
   @Post()
   @ApiResponse({
@@ -143,10 +148,12 @@ export class TournamentsController {
     status: 404,
     description: 'Not found',
   })
-  async deleteWeightclass(
+  async deleteAllTournamentData(
     @Headers('user-id') userId: string,
     @Param('id') id: string,
   ): Promise<void> {
     await this.tournamentsService.deleteTournament(userId, id);
+    await this.scoreService.deleteTournamentScore(id);
+    await this.fightsService.deleteTournamentFights(id);
   }
 }
