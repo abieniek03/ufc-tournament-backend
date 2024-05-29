@@ -42,6 +42,9 @@ export class FightsService {
             },
           },
         },
+        orderBy: {
+          createdAt: 'asc',
+        },
       });
 
       if (!tournamentFights.length) {
