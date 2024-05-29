@@ -175,4 +175,12 @@ export class FightsService {
       throw error;
     }
   }
+
+  public async deleteTournamentFights(id: string): Promise<void> {
+    try {
+      await this.prisma.fight.deleteMany({ where: { tournamentId: id } });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
