@@ -36,17 +36,6 @@ export class FightsService {
               lastName: true,
             },
           },
-
-          redScore: {
-            select: {
-              ranking: true,
-            },
-          },
-          blueScore: {
-            select: {
-              ranking: true,
-            },
-          },
           tournament: {
             select: {
               userId: true,

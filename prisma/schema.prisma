@@ -111,7 +111,7 @@ model Score {
   id                String      @id @default(uuid())
   userId            String
   tournamentId      String
-  fighterId         String      @unique
+  fighterId         String
   ranking           Int?
   fights            Int         @default(0)
   win               Int         @default(0)
@@ -126,8 +126,6 @@ model Score {
   updatedAt         DateTime    @updatedAt
   tournament        Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   fighter           Fighter?    @relation(fields: [fighterId], references: [id])
-  redScore          Fight[]     @relation("redScore")
-  blueScore         Fight[]     @relation("blueScore")
 
   @@map("scores")
 }
@@ -148,8 +146,6 @@ model Fight {
   tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id], map: "redFighterId_fkey")
   blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id], map: "blueFighterId_fkey")
-  redScore      Score?      @relation("redScore", fields: [redFighterId], references: [fighterId], map: "redScoreId_fkey")
-  blueScore     Score?      @relation("blueScore", fields: [blueFighterId], references: [fighterId], map: "blueScoreId_fkey")
 
   @@map("fights")
 }

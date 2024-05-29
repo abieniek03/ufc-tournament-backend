@@ -79,7 +79,7 @@ export class TournamentsService {
     try {
       const fightersCount = data.fighters.length;
 
-      if (fightersCount === 8 || fightersCount === 6) {
+      if (fightersCount === 8 || fightersCount === 16) {
         const createdTournament = await this.prisma.tournament.create({
           data: {
             ...data,
