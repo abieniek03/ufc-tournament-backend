@@ -21,8 +21,9 @@ export class ScoreService {
       const tournamentScore = await this.prisma.score.findMany({
         where: { tournamentId },
         orderBy: [
-          { positionIndex: 'desc' },
           { points: 'desc' },
+          { positionIndex: 'desc' },
+          { fights: 'desc' },
           { win: 'asc' },
           { ranking: 'asc' },
         ],
