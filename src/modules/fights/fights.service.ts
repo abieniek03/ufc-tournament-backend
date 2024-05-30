@@ -43,7 +43,7 @@ export class FightsService {
           },
         },
         orderBy: {
-          createdAt: 'asc',
+          createdAt: level === 'ROUND_2' ? 'desc' : 'asc',
         },
       });
 
