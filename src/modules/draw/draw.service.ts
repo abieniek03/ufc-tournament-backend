@@ -39,7 +39,63 @@ export class DrawService {
     return { redFighter, blueFighter };
   }
 
-  private async drawFights(
+  public async drawOpponents(
+    userId: string,
+    tournamentId: string,
+    level: Level,
+    opponents: { fighterId: string }[],
+  ) {
+    const allFights = await this.prisma.fight.findMany({
+      where: { tournamentId, level },
+      include: {
+        tournament: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    if (allFights[0].tournament.userId !== userId)
+      throw new ForbiddenException('You are not owner of this tournament.');
+
+    allFights.forEach((el) => {
+      if (el.blueFighterId)
+        throw new ConflictException(
+          'All fights already booked for this round.',
+        );
+    });
+
+    for (const fight of allFights) {
+      const opponentsBusy = await this.prisma.fight.findMany({
+        where: { tournamentId: fight.tournamentId },
+        select: {
+          blueFighterId: true,
+        },
+      });
+
+      const opponentsFree = opponents.filter(
+        (opponent) =>
+          !opponentsBusy.some(
+            (budsyOpponent) =>
+              budsyOpponent.blueFighterId === opponent.fighterId,
+          ),
+      );
+
+       await this.prisma.fight.update({
+        where: {
+          id: fight.id,
+        },
+        data: {
+          blueFighterId:
+            opponentsFree[Math.floor(Math.random() * opponentsFree.length)]
+              .fighterId,
+        },
+      });
+    }
+  }
+
+  private async secondRoundDrawFights(
     tournamentId: string,
     level: Level,
     firstFight: FirstFight,
@@ -131,63 +187,18 @@ export class DrawService {
   ): Promise<void> {
     if (level === 'ROUND_1') {
       try {
-        const allFights = await this.prisma.fight.findMany({
-          where: { tournamentId, level },
-          include: {
-            tournament: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        });
-
-        if (allFights[0].tournament.userId !== userId)
-          throw new ForbiddenException('You are not owner of this tournament.');
-
-        allFights.forEach((el) => {
-          if (el.blueFighterId)
-            throw new ConflictException(
-              'All fights already booked for this round.',
-            );
-        });
-
-        const allFighters = await this.prisma.score.findMany({
+        const fighters = await this.prisma.score.findMany({
+          where: { tournamentId },
           orderBy: { ranking: 'desc' },
           select: {
             fighterId: true,
           },
         });
-
-        const opponentsAll = allFighters.slice(0, allFighters.length / 2);
-
-        for (const fight of allFights) {
-          const opponentsBusy = await this.prisma.fight.findMany({
-            where: { tournamentId: fight.tournamentId },
-            select: {
-              blueFighterId: true,
-            },
-          });
-
-          const opponentsFree = opponentsAll.filter(
-            (opponent) =>
-              !opponentsBusy.some(
-                (budsyOpponent) =>
-                  budsyOpponent.blueFighterId === opponent.fighterId,
-              ),
-          );
-
-          await this.prisma.fight.update({
-            where: {
-              id: fight.id,
-            },
-            data: {
-              blueFighterId:
-                opponentsFree[Math.floor(Math.random() * opponentsFree.length)]
-                  .fighterId,
-            },
-          });
-        }
+        console.log(fighters);
+        console.log('---');
+        const opponents = fighters.slice(0, fighters.length / 2);
+        console.log(opponents);
+        await this.drawOpponents(userId, tournamentId, level, opponents);
       } catch (error: any) {
         throw error;
       }
@@ -195,8 +206,8 @@ export class DrawService {
 
     if (level === 'ROUND_2') {
       try {
-        await this.drawFights(tournamentId, level, 'WIN');
-        await this.drawFights(tournamentId, level, 'LOSE');
+        await this.secondRoundDrawFights(tournamentId, level, 'WIN');
+        await this.secondRoundDrawFights(tournamentId, level, 'LOSE');
       } catch (error: any) {
         throw error;
       }

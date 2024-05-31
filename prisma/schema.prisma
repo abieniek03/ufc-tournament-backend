@@ -21,7 +21,6 @@ enum Sex {
 enum Level {
   ROUND_1
   ROUND_2
-  LAST_16
   QUARTERFINAL
   SEMIFINAL
   FINAL
@@ -104,7 +103,7 @@ model Tournament {
   weightclass   Weightclass @relation(fields: [weightclassId], references: [id])
   score         Score[]
   fights        Fight[]
-  Knockout      Knockout[]
+  Bracket       Bracket[]
 
   @@map("tournaments")
 }
@@ -148,12 +147,12 @@ model Fight {
   tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id], map: "redFighterId_fkey")
   blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id], map: "blueFighterId_fkey")
-  Knockout      Knockout[]
+  bracket       Bracket[]
 
   @@map("fights")
 }
 
-model Knockout {
+model Bracket {
   id           String     @id @default(uuid())
   tournamentId String
   fightId      String
@@ -162,7 +161,7 @@ model Knockout {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  fight        Fight      @relation(fields: [fightId], references: [id])
+  fight        Fight      @relation(fields: [fightId], references: [id], onDelete: Cascade)
 
-  @@map("knockouts")
+  @@map("brackets")
 }
