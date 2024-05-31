@@ -2,15 +2,12 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UseGuards,
 } from '@nestjs/common';
 import { Level, Score } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
 import { Fight } from '@prisma/client';
 import { UpdateFightResultDto } from './dto/fight.dto';
 
-@UseGuards(new ClerkAuthGuard())
 @Injectable()
 export class FightsService {
   constructor(private readonly prisma: PrismaService) {}
