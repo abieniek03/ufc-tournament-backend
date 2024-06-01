@@ -53,7 +53,7 @@ export class BracketService {
   public async drawKnockoutStage(
     userId: string,
     tournamentId: string,
-  ): Promise<any> {
+  ): Promise<void> {
     const score = await this.scoreService.getTournamentScore(
       userId,
       tournamentId,

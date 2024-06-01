@@ -20,7 +20,7 @@ export class DrawController {
   @Post('/:tournamentId/:level')
   @HttpCode(204)
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'Success',
   })
   @ApiResponse({
