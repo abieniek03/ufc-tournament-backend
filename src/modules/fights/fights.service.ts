@@ -79,7 +79,7 @@ export class FightsService {
               bonusPoints = 2;
               break;
             default:
-              bonusPoints = 3;
+              bonusPoints = 1;
           }
         }
         return fighter.points + 3 + bonusPoints;
