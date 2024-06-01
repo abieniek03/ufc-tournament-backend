@@ -68,7 +68,7 @@ export class DrawService {
 
     for (const fight of allFights) {
       const opponentsBusy = await this.prisma.fight.findMany({
-        where: { tournamentId: fight.tournamentId },
+        where: { tournamentId: fight.tournamentId, level },
         select: {
           blueFighterId: true,
         },
@@ -82,7 +82,7 @@ export class DrawService {
           ),
       );
 
-       await this.prisma.fight.update({
+      await this.prisma.fight.update({
         where: {
           id: fight.id,
         },

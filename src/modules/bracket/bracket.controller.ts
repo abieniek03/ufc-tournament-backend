@@ -13,19 +13,19 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
-import { KnockoutService } from './knockout.service';
+import { BracketService } from './bracket.service';
 
 @UseGuards(new ClerkAuthGuard())
-@ApiTags('Knockout')
-@Controller('knockout')
-export class KnockoutController {
-  constructor(private knockoutService: KnockoutService) {}
+@ApiTags('Bracket')
+@Controller('bracket')
+export class BracketController {
+  constructor(private bracketService: BracketService) {}
 
   @Post('/:tournamentId')
   async drawKnockoutStage(
     @Headers('user-id') userId: string,
     @Param('tournamentId') tournamentId: string,
   ): Promise<any> {
-    return await this.knockoutService.drawKnockoutStage(userId, tournamentId);
+    return await this.bracketService.drawKnockoutStage(userId, tournamentId);
   }
 }

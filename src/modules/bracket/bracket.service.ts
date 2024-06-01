@@ -5,7 +5,7 @@ import { Level, Score } from '@prisma/client';
 import { DrawService } from '../draw/draw.service';
 
 @Injectable()
-export class KnockoutService {
+export class BracketService {
   constructor(
     private readonly prisma: PrismaService,
     private scoreService: ScoreService,
