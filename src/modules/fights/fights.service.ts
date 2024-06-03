@@ -12,6 +12,23 @@ import { UpdateFightResultDto } from './dto/fight.dto';
 export class FightsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private calcNextBracketPosition(level: Level, value: number): number {
+    const nextBracketPosition = value / 2;
+
+    if (level !== 'FINAL') {
+      switch (nextBracketPosition) {
+        case 0.5:
+          return Math.ceil(nextBracketPosition);
+        case 1.5:
+          return Math.round(nextBracketPosition);
+        default:
+          return nextBracketPosition === 1 ? 2 : nextBracketPosition;
+      }
+    }
+
+    return Math.ceil(nextBracketPosition);
+  }
+
   public async getTournamentFights(
     userId: string,
     tournamentId: string,
@@ -147,27 +164,95 @@ export class FightsService {
       if (fight.tournament.userId !== userId)
         throw new ForbiddenException('You are not owner of this tournament.');
 
-      const redFighterScore = await this.prisma.score.findFirst({
-        where: {
-          tournamentId: fight.tournamentId,
-          fighterId: fight.redFighterId,
-        },
-      });
-
-      const blueFighterScore = await this.prisma.score.findFirst({
-        where: {
-          tournamentId: fight.tournamentId,
-          fighterId: fight.blueFighterId,
-        },
-      });
-
-      await this.updateFighterScore(redFighterScore, data);
-      await this.updateFighterScore(blueFighterScore, data);
-
-      return await this.prisma.fight.update({
+      const updatedFight = await this.prisma.fight.update({
         where: { id: fightId },
         data,
       });
+
+      if (fight.level === 'ROUND_1' || fight.level === 'ROUND_2') {
+        const redFighterScore = await this.prisma.score.findFirst({
+          where: {
+            tournamentId: fight.tournamentId,
+            fighterId: fight.redFighterId,
+          },
+        });
+
+        const blueFighterScore = await this.prisma.score.findFirst({
+          where: {
+            tournamentId: fight.tournamentId,
+            fighterId: fight.blueFighterId,
+          },
+        });
+
+        await this.updateFighterScore(redFighterScore, data);
+        await this.updateFighterScore(blueFighterScore, data);
+      } else {
+        if (updatedFight.level !== 'FINAL') {
+          let nextLevel: Level;
+
+          updatedFight.level === 'QUARTERFINAL'
+            ? (nextLevel = 'SEMIFINAL')
+            : (nextLevel = 'FINAL');
+
+          const bracket = await this.prisma.bracket.findFirst({
+            where: {
+              fightId: updatedFight.id,
+            },
+          });
+
+          const nextBracketPosition = this.calcNextBracketPosition(
+            nextLevel,
+            bracket.position,
+          );
+
+          const nextBracketExist = await this.prisma.bracket.findFirst({
+            where: {
+              tournamentId: fight.tournamentId,
+              level: nextLevel,
+              position: nextBracketPosition,
+            },
+          });
+
+          if (nextBracketExist) {
+            const fightData = await this.prisma.fight.findUnique({
+              where: { id: nextBracketExist.fightId },
+            });
+
+            await this.prisma.fight.update({
+              where: {
+                id: nextBracketExist.fightId,
+              },
+              data: {
+                redFighterId: fightData.redFighterId
+                  ? fightData.redFighterId
+                  : data.winner,
+                blueFighterId: fightData.blueFighterId
+                  ? fightData.blueFighterId
+                  : data.winner,
+              },
+            });
+          } else {
+            const nextFight = await this.prisma.fight.create({
+              data: {
+                tournamentId: updatedFight.tournamentId,
+                level: nextLevel,
+                redFighterId: updatedFight.winner,
+              },
+            });
+
+            await this.prisma.bracket.create({
+              data: {
+                tournamentId: nextFight.tournamentId,
+                fightId: nextFight.id,
+                level: nextLevel,
+                position: nextBracketPosition,
+              },
+            });
+          }
+        }
+      }
+
+      return updatedFight;
     } catch (error: any) {
       throw error;
     }
