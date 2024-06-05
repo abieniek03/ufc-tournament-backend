@@ -94,7 +94,6 @@ model Ranking {
 
 model Tournament {
   id            String      @id @default(uuid())
-  name          String
   weightclassId String
   fighters      Int
   userId        String
