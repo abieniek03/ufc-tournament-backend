@@ -194,10 +194,9 @@ export class DrawService {
             fighterId: true,
           },
         });
-        console.log(fighters);
-        console.log('---');
+
         const opponents = fighters.slice(0, fighters.length / 2);
-        console.log(opponents);
+
         await this.drawOpponents(userId, tournamentId, level, opponents);
       } catch (error: any) {
         throw error;
