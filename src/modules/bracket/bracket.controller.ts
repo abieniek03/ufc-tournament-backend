@@ -1,23 +1,24 @@
 import {
   Controller,
+  UseGuards,
   Post,
   Headers,
   Param,
-  UseGuards,
   HttpCode,
 } from '@nestjs/common';
-import { DrawService } from './draw.service';
+
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Level } from '@prisma/client';
-import { ClerkAuthGuard } from 'src/guards/clerk-auth.guard';
+
+import { ClerkAuthGuard } from '../../guards/clerk-auth.guard';
+import { BracketService } from './bracket.service';
 
 @UseGuards(new ClerkAuthGuard())
-@ApiTags('Draw')
-@Controller('draw')
-export class DrawController {
-  constructor(private readonly drawService: DrawService) {}
+@ApiTags('Bracket')
+@Controller('bracket')
+export class BracketController {
+  constructor(private bracketService: BracketService) {}
 
-  @Post('/:tournamentId/:level')
+  @Post('/:tournamentId')
   @HttpCode(204)
   @ApiResponse({
     status: 204,
@@ -39,11 +40,10 @@ export class DrawController {
     status: 409,
     description: 'Conflict',
   })
-  async draw(
+  async drawKnockoutStage(
     @Headers('user-id') userId: string,
     @Param('tournamentId') tournamentId: string,
-    @Param('level') level: Level,
   ): Promise<void> {
-    await this.drawService.draw(userId, tournamentId, level);
+    return await this.bracketService.drawKnockoutStage(userId, tournamentId);
   }
 }

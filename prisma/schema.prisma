@@ -94,7 +94,6 @@ model Ranking {
 
 model Tournament {
   id            String      @id @default(uuid())
-  name          String
   weightclassId String
   fighters      Int
   userId        String
@@ -103,6 +102,7 @@ model Tournament {
   weightclass   Weightclass @relation(fields: [weightclassId], references: [id])
   score         Score[]
   fights        Fight[]
+  Bracket       Bracket[]
 
   @@map("tournaments")
 }
@@ -144,8 +144,23 @@ model Fight {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id], map: "redFighterId_fkey")
-  blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id], map: "blueFighterId_fkey")
+  redFighter    Fighter?    @relation("redFighter", fields: [redFighterId], references: [id])
+  blueFighter   Fighter?    @relation("blueFighter", fields: [blueFighterId], references: [id])
+  bracket       Bracket[]
 
   @@map("fights")
+}
+
+model Bracket {
+  id           String     @id @default(uuid())
+  tournamentId String
+  fightId      String
+  level        Level
+  position     Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  fight        Fight      @relation(fields: [fightId], references: [id], onDelete: Cascade)
+
+  @@map("brackets")
 }
