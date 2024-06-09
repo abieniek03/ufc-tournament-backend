@@ -21,8 +21,8 @@ services:
     volumes:
       - db-volume:/var/db
     environment:
-      POSTGRES_USER: 'admin'
-      POSTGRES_PASSWORD: 'password'
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
 
   adminer:
     image: adminer
