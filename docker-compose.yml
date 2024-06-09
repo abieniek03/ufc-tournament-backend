@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  nestjs-app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - app-volume:/var/www/html
+
+  db:
+    image: postgres:alpine3.20
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - db-volume:/var/db
+    environment:
+      POSTGRES_USER: 'admin'
+      POSTGRES_PASSWORD: 'password'
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  app-volume:
+  db-volume:
