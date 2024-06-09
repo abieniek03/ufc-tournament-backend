@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -163,6 +164,12 @@ export class FightsService {
 
       if (fight.tournament.userId !== userId)
         throw new ForbiddenException('You are not owner of this tournament.');
+
+      if (data.round > 5)
+        throw new BadRequestException('Final bout has 5 rounds.');
+
+      if (data.round > 3 && fight.level !== 'FINAL')
+        throw new BadRequestException('This bout has 3 rounds.');
 
       const updatedFight = await this.prisma.fight.update({
         where: { id: fightId },
