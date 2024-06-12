@@ -1,4 +1,4 @@
-FROM node:20.14.0-alpine
+FROM node:20.11.0-alpine
 
 
 COPY package*.json ./
@@ -9,6 +9,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 8080
+EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]
