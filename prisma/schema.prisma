@@ -58,7 +58,7 @@ model Fighter {
   id              String      @id @unique
   firstName       String
   lastName        String
-  nickname        String
+  nickname        String?
   birthDate       DateTime
   sex             Sex
   nationality     String
