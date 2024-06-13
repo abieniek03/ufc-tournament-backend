@@ -102,7 +102,7 @@ model Tournament {
   weightclass   Weightclass @relation(fields: [weightclassId], references: [id])
   score         Score[]
   fights        Fight[]
-  Bracket       Bracket[]
+  bracket       Bracket[]
 
   @@map("tournaments")
 }
