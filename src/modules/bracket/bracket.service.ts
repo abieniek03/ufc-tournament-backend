@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ScoreService } from '../score/score.service';
-import { Level, Score } from '@prisma/client';
+import { Bracket, Fight, Level, Score } from '@prisma/client';
 import { DrawService } from '../draw/draw.service';
 
 @Injectable()
@@ -76,5 +76,24 @@ export class BracketService {
       roundName,
       opponents,
     );
+  }
+
+  public async getTournamentBracket(
+    userId: string,
+    tournamentId: string,
+  ): Promise<Bracket[]> {
+    const bracket = await this.prisma.bracket.findMany({
+      where: { tournamentId },
+      include: {
+        tournament: true,
+      },
+    });
+
+    for (const element of bracket) {
+      if (element.tournament.userId !== userId)
+        throw new ConflictException('You are not owner of this tournament.');
+    }
+
+    return bracket;
   }
 }
