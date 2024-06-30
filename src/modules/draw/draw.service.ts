@@ -103,6 +103,7 @@ export class DrawService {
     try {
       const allFighters = await this.prisma.score.findMany({
         where: {
+          tournamentId: tournamentId,
           win: firstFight === 'WIN' ? 1 : 0,
           lose: firstFight === 'LOSE' ? 1 : 0,
         },
